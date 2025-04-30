@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active'
   }
 }, {
   timestamps: true
