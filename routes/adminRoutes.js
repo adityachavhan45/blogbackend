@@ -262,7 +262,7 @@ router.post('/blogs', authMiddleware, upload.single('coverImage'), async (req, r
 
 router.get('/blogs', authMiddleware, async (req, res) => {
   try {
-    const blogs = await Blog.find().populate('author', 'name');
+    const blogs = await Blog.find().populate('author', 'username email');
     res.json(blogs);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -272,7 +272,7 @@ router.get('/blogs', authMiddleware, async (req, res) => {
 // Get a single blog by ID
 router.get('/blogs/:id', authMiddleware, async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id).populate('author', 'name');
+    const blog = await Blog.findById(req.params.id).populate('author', 'username email');
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }

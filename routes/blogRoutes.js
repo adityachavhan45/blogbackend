@@ -6,7 +6,7 @@ const Blog = require('../models/Blog');
 router.get('/', async (req, res) => {
   try {
     const blogs = await Blog.find()
-      .populate('author', 'name')
+      .populate('author', 'username email')
       .sort({ createdAt: -1 }); // Sort by newest first
     res.json(blogs);
   } catch (error) {
@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 // Get a single blog
 router.get('/:id', async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id).populate('author', 'name');
+    const blog = await Blog.findById(req.params.id).populate('author', 'username email');
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
