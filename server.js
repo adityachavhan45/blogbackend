@@ -10,6 +10,7 @@ const interactionRoutes = require('./routes/interactionRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const emailExistence = require('email-existence');
 require('dotenv').config();
 
 const app = express();
@@ -109,6 +110,25 @@ app.post('/api/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+});
+
+// Email verification endpoint
+app.post('/api/verify-email', (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Email is required' });
+  }
+  
+  // Verify email existence
+  emailExistence.check(email, (error, response) => {
+    if (error) {
+      return res.status(500).json({ success: false, message: 'Error checking email', error: error.message });
+    }
+    
+    // response is a boolean (true/false) indicating if the email exists
+    res.json({ success: true, exists: response });
+  });
 });
 
 // Routes
