@@ -11,6 +11,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const emailExistence = require('email-existence');
+const { generateSitemap } = require('./services/sitemapService');
 require('dotenv').config();
 
 const app = express();
@@ -140,5 +141,32 @@ app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/interactions', interactionRoutes);
 app.use('/api/ai', aiRoutes);
 
+// Sitemap generation route (protected with a simple API key for security)
+app.get('/api/generate-sitemap', async (req, res) => {
+  const apiKey = req.query.key;
+  
+  // Simple API key check - in production, use a more secure approach
+  if (apiKey !== process.env.SITEMAP_API_KEY && apiKey !== 'likhoverse-sitemap-key') {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+  
+  try {
+    const result = await generateSitemap();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`Server running on port ${PORT}`);
+  
+  // Generate sitemap on server startup
+  try {
+    await generateSitemap();
+    console.log('Initial sitemap generated successfully');
+  } catch (error) {
+    console.error('Error generating initial sitemap:', error);
+  }
+});

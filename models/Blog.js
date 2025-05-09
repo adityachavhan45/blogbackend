@@ -57,6 +57,23 @@ const blogSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  // SEO Fields
+  seoTitle: {
+    type: String,
+    trim: true
+  },
+  seoDescription: {
+    type: String,
+    trim: true
+  },
+  seoKeywords: [{
+    type: String,
+    trim: true
+  }],
+  focusKeyword: {
+    type: String,
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

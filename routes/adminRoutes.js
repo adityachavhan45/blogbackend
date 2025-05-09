@@ -242,7 +242,19 @@ router.get('/profile', authMiddleware, async (req, res) => {
 // Blog Routes
 router.post('/blogs', authMiddleware, upload.single('coverImage'), async (req, res) => {
   try {
-    const { title, excerpt, content, category, readTime, tags } = req.body;
+    const { 
+      title, 
+      excerpt, 
+      content, 
+      category, 
+      readTime, 
+      tags, 
+      seoTitle, 
+      seoDescription, 
+      seoKeywords, 
+      focusKeyword 
+    } = req.body;
+    
     const blog = new Blog({
       title,
       excerpt,
@@ -251,7 +263,12 @@ router.post('/blogs', authMiddleware, upload.single('coverImage'), async (req, r
       readTime,
       author: req.admin.id,
       tags: tags ? JSON.parse(tags) : [],
-      coverImage: req.file ? `/uploads/blog-images/${req.file.filename}` : null
+      coverImage: req.file ? `/uploads/blog-images/${req.file.filename}` : null,
+      // SEO fields
+      seoTitle: seoTitle || title,
+      seoDescription: seoDescription || excerpt,
+      seoKeywords: seoKeywords ? JSON.parse(seoKeywords) : [],
+      focusKeyword
     });
     await blog.save();
     res.status(201).json(blog);
