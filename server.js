@@ -8,6 +8,7 @@ const commentRoutes = require('./routes/commentRoutes');
 const recommendationRoutes = require('./routes/recommendationRoutes');
 const interactionRoutes = require('./routes/interactionRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const sitemapRoutes = require('./routes/sitemapRoutes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const emailExistence = require('email-existence');
@@ -140,6 +141,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/interactions', interactionRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/', sitemapRoutes);
 
 // Sitemap generation route (protected with a simple API key for security)
 app.get('/api/generate-sitemap', async (req, res) => {
