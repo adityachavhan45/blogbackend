@@ -301,18 +301,40 @@ router.get('/blogs/:id', authMiddleware, async (req, res) => {
 
 router.put('/blogs/:id', authMiddleware, async (req, res) => {
   try {
+    const { title, excerpt, content, category, readTime } = req.body;
+    
+    if (!title || !excerpt || !content || !category || !readTime) {
+      return res.status(400).json({ message: 'Please provide all required fields' });
+    }
+
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
-    if (blog.author.toString() !== req.admin.id) {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-    Object.assign(blog, req.body);
-    await blog.save();
-    res.json(blog);
+    
+    // If we reach here, the user is authenticated as an admin (authMiddleware verifies this)
+    // No need to check if they're the author - any admin can edit any blog
+
+    // Update the blog fields
+    blog.title = title;
+    blog.excerpt = excerpt;
+    blog.content = content;
+    blog.category = category;
+    blog.readTime = readTime;
+    blog.updatedAt = Date.now();
+
+    const updatedBlog = await blog.save();
+    res.status(200).json({
+      message: 'Blog updated successfully',
+      blog: updatedBlog
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error updating blog:', error);
+    res.status(500).json({ 
+      message: 'Failed to update blog',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
