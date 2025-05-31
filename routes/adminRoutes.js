@@ -344,13 +344,15 @@ router.delete('/blogs/:id', authMiddleware, async (req, res) => {
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
-    if (blog.author.toString() !== req.admin.id) {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
+    // Remove the author check to allow any admin to delete any blog
     await Blog.deleteOne({ _id: blog._id });
-    res.json({ message: 'Blog deleted' });
+    res.json({ message: 'Blog deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error deleting blog:', error);
+    res.status(500).json({ 
+      message: 'Failed to delete blog',
+      error: error.message 
+    });
   }
 });
 
